@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>ApplyPilot &mdash; CV-matched job search</title>
+<meta name="description" content="Upload your CV, get an ATS score and improvement tips, find real jobs ranked by fit, and generate a tailored cover letter for each one." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="brand-mark" aria-hidden="true"></span> ApplyPilot</div>
+  <div class="theme-toggle" role="group" aria-label="Theme">
+    <button class="seg" id="theme-light" aria-pressed="true">Light</button>
+    <button class="seg" id="theme-dark" aria-pressed="false">Dark</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">CV-matched job search</div>
+    <h1>Find the jobs your resume actually qualifies for.</h1>
+    <p class="lede">Upload your CV once. ApplyPilot scores it, searches live job boards, ranks every opening by real fit, and drafts a tailored cover letter &mdash; you stay in control of every application.</p>
+  </section>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" id="tab-cv" role="tab" aria-selected="true">1. Your CV</button>
+    <button class="tab" id="tab-jobs" role="tab" aria-selected="false">2. Find jobs</button>
+    <button class="tab" id="tab-tracker" role="tab" aria-selected="false">3. Tracker <span class="badge" id="tracker-count" hidden>0</span></button>
+  </div>
+
+  <!-- ============ TAB 1: CV ============ -->
+  <section class="panel" id="panel-cv">
+    <div class="card">
+      <div class="card-title">Upload your resume</div>
+      <div class="card-desc">PDF, DOCX, or TXT. Everything runs locally on this machine &mdash; your resume is never sent anywhere except the job boards you choose to search.</div>
+
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload resume">
+        <div class="dropzone-icon">&#128196;</div>
+        <div class="dropzone-title">Drop your resume here, or click to choose a file</div>
+        <div class="dropzone-sub">.pdf &middot; .docx &middot; .txt &mdash; up to 8MB</div>
+      </div>
+      <input type="file" id="file-input" accept=".pdf,.docx,.txt" hidden />
+
+      <div class="upload-row">
+        <button class="btn" id="btn-sample">Try it with a sample resume</button>
+        <span id="upload-status" class="card-desc" style="margin:0;"></span>
+      </div>
+    </div>
+
+    <div id="cv-results" hidden>
+      <div class="card">
+        <div class="card-title">ATS &amp; resume quality score</div>
+        <div class="card-desc">A transparent, rule-based score &mdash; every point lost is explained below.</div>
+        <div class="score-row">
+          <div class="score-ring" id="score-ring" style="--pct:0">
+            <div class="score-ring-value" id="score-value">0</div>
+          </div>
+          <div class="score-meta">
+            <h3 id="cv-name-display">Your resume</h3>
+            <p id="cv-summary-line">&mdash;</p>
+          </div>
+        </div>
+        <div class="breakdown" id="score-breakdown"></div>
+        <div class="two-col">
+          <div>
+            <div class="card-title" style="font-size:13px;">Suggestions</div>
+            <ul class="list-plain suggestions" id="suggestions-list"></ul>
+          </div>
+          <div>
+            <div class="card-title" style="font-size:13px;">Strengths</div>
+            <ul class="list-plain strengths" id="strengths-list"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Detected skills</div>
+        <div class="card-desc" id="skills-count-desc">&mdash;</div>
+        <div class="chip-row" id="skills-chip-row"></div>
+      </div>
+
+      <div class="card">
+        <button class="btn btn-primary" id="btn-goto-jobs">Find matching jobs &rarr;</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TAB 2: JOBS ============ -->
+  <section class="panel" id="panel-jobs" hidden>
+    <div class="card">
+      <div class="card-title">Search live job boards</div>
+      <div class="card-desc">Pulled in real time from Remotive and Arbeitnow (both free, public job APIs). Results are ranked against your uploaded CV when one is available.</div>
+      <div class="search-row">
+        <input type="text" id="search-query" placeholder="Job title or keyword (e.g. backend engineer)" />
+        <input type="text" id="search-location" placeholder="Location filter (optional)" />
+        <button class="btn btn-primary" id="btn-search">Search</button>
+      </div>
+      <div class="note" id="no-cv-note" hidden>No CV uploaded yet &mdash; results below are unranked. <a href="#" id="link-back-to-cv">Upload one</a> to get match scores and tailored cover letters.</div>
+    </div>
+
+    <div id="jobs-results"></div>
+  </section>
+
+  <!-- ============ TAB 3: TRACKER ============ -->
+  <section class="panel" id="panel-tracker" hidden>
+    <div class="card">
+      <div class="card-title">Application tracker</div>
+      <div class="card-desc">Every job you save or prepare an application for shows up here. This is stored locally in applypilot.db &mdash; it's your own private tracker, nothing is shared.</div>
+    </div>
+    <div class="tracker-board" id="tracker-board"></div>
+  </section>
+
+  <footer>
+    <span>Built with FastAPI + vanilla JS. Job data from Remotive &amp; Arbeitnow. No accounts, no tracking, no auto-submitted applications.</span>
+  </footer>
+</div>
+
+<!-- ============ APPLY MODAL ============ -->
+<div class="modal-overlay" id="modal-overlay" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <div>
+        <div class="card-title" id="modal-job-title" style="margin-bottom:2px;">Prepare application</div>
+        <div class="card-desc" id="modal-job-meta" style="margin-bottom:0;">&mdash;</div>
+      </div>
+      <button class="modal-close" id="modal-close" aria-label="Close">&#10005;</button>
+    </div>
+
+    <div id="modal-body">
+      <div class="card-title" style="font-size:13px;">Tailored cover letter</div>
+      <div class="letter-box" id="letter-box">Generating&hellip;</div>
+      <div class="job-actions">
+        <button class="btn btn-sm" id="btn-copy-letter">Copy letter</button>
+        <button class="btn btn-sm" id="btn-download-letter">Download .txt</button>
+      </div>
+
+      <div class="card-title" style="font-size:13px; margin-top:18px;">Resume tailoring tips for this job</div>
+      <ul class="list-plain" id="tailoring-tips"></ul>
+
+      <div class="job-actions" style="margin-top:18px;">
+        <a class="btn btn-primary" id="btn-open-application" href="#" target="_blank" rel="noopener">Open real application page &rarr;</a>
+        <button class="btn" id="btn-save-tracker">Save to tracker</button>
+      </div>
+      <div class="note">Applying still happens on the employer's own site, in your control. This just gets your materials ready.</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
+
