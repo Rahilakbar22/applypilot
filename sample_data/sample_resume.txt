@@ -1,0 +1,34 @@
+Jordan Avery
+jordan.avery@email.com | (555) 214-7788 | linkedin.com/in/jordanavery | github.com/jordanavery
+
+SUMMARY
+Backend-focused software engineer with 4+ years experience building and scaling APIs for
+consumer products. Comfortable owning a service from design through on-call.
+
+SKILLS
+Python, JavaScript, TypeScript, SQL, FastAPI, Django, React, PostgreSQL, Redis, Docker,
+Kubernetes, AWS, Terraform, GitHub Actions, REST APIs, GraphQL, Microservices
+
+EXPERIENCE
+
+Backend Engineer — Northlane Software (2022 - Present)
+- Led the redesign of the checkout service, cutting p95 latency by 42% under peak load
+- Built a Python/FastAPI microservice handling 3M+ requests/day, deployed on AWS with Terraform
+- Automated the deployment pipeline with GitHub Actions, reducing release time from 40 to 6 minutes
+- Mentored two junior engineers through their first on-call rotations
+
+Software Engineer — Hollowbrook Systems (2020 - 2022)
+- Designed and shipped a PostgreSQL-backed notifications system used by 500K+ monthly users
+- Migrated a legacy Django monolith toward microservices, improving deploy frequency 5x
+- Wrote integration tests that increased backend test coverage from 46% to 81%
+- Collaborated with product and design to launch 3 major features on schedule
+
+EDUCATION
+B.Sc. in Computer Science, University of Lakeview, 2020
+
+PROJECTS
+- Built and maintain an open-source Python rate-limiting library (600+ GitHub stars)
+- Created a personal-finance dashboard using React and FastAPI, deployed on AWS
+
+CERTIFICATIONS
+AWS Certified Solutions Architect – Associate
